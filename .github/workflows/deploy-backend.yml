@@ -1,0 +1,24 @@
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Render
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }} \
+            -H "Content-Type: application/json"
+
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Verify deployment
+        run: |
+          curl -f ${{ secrets.RENDER_API_URL }}/api/health || exit 1
