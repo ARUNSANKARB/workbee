@@ -8,8 +8,14 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error(`✗ Database connection failed: ${error.message}`);
-    console.log('⚠️  Server will run without database (development mode)');
-    return null;
+    if (process.env.NODE_ENV === "development") {
+      console.log("Server will run without the database(development)");
+      return null;
+    }
+    else {
+      console.error("Production environment - Shutting down the server");
+      process.exit(1);
+    }
   }
 };
 
