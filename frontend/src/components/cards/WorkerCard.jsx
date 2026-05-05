@@ -5,12 +5,12 @@ import Card from '../common/Card';
 
 const WorkerCard = ({ worker }) => {
   return (
-    <Link to={`/worker/${worker.userId._id}`}>
+    <Link to={`/worker/${worker._id}`}>
       <Card hoverable className="h-full">
         <div className="flex gap-4">
           {/* Image */}
           <img 
-            src={worker.userId.profileImage} 
+            src={worker.userId.aadharImage} 
             alt={worker.userId.name}
             className="w-16 h-16 rounded-lg object-cover"
           />
@@ -20,7 +20,7 @@ const WorkerCard = ({ worker }) => {
             <h3 className="font-bold text-lg text-dark">{worker.userId.name}</h3>
             
             {/* Skills */}
-            <p className="text-sm text-gray-600 truncate">{worker.skills?.join(', ')}</p>
+            <p className="text-sm text-gray-600 truncate">{worker.bio}</p>
             
             {/* Rating */}
             <div className="flex items-center gap-2 mt-2">
@@ -35,12 +35,12 @@ const WorkerCard = ({ worker }) => {
             <div className="flex items-center justify-between mt-3">
               <div className="flex items-center gap-1 text-primary font-bold">
                 <FiDollarSign className="w-4 h-4" />
-                <span>{worker.serviceRate}/hr</span>
+                <span>{worker.hourlyRate}/hr</span>
               </div>
-              {worker.location?.address && (
+              {worker.userId?.city && (
                 <div className="flex items-center gap-1 text-xs text-gray-600">
                   <FiMapPin className="w-3 h-3" />
-                  <span className="truncate">{worker.location.address}</span>
+                  <span className="truncate">{worker.userId.area},{worker.userId.city}</span>
                 </div>
               )}
             </div>

@@ -13,10 +13,7 @@ const Services = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetchCategories();
-    if (filters.categoryId) {
-      fetchWorkers(filters.categoryId);
-    }
+    fetchWorkers();
   }, []);
 
   const fetchCategories = async () => {
@@ -28,17 +25,21 @@ const Services = () => {
     }
   };
 
-  const fetchWorkers = async (categoryId) => {
+  const fetchWorkers = async (filter) => {
     setLoading(true);
     try {
-      const res = await workerAPI.getByCategory(categoryId, {
-        page: filters.page,
-        limit: filters.limit,
-      });
-      setWorkers(res.data.data.workers);
-    } catch (err) {
-      console.error('Failed to fetch workers', err);
-    } finally {
+      let res;
+      if(filter)
+      {
+        res= await workerAPI.getByCategory(filter);
+      }
+      else{
+        res = await workerAPI.getAll();
+      }
+      setWorkers(res.data);
+    } catch (error) {
+      console.error('Failed to fetch the workers')
+    } finally{
       setLoading(false);
     }
   };
@@ -53,7 +54,7 @@ const Services = () => {
     setLoading(true);
     try {
       const res = await workerAPI.search({ query: search });
-      setWorkers(res.data.data.workers);
+      setWorkers(res.data);
     } catch (err) {
       console.error('Search failed', err);
     } finally {

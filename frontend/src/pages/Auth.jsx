@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiUser, FiPhone } from 'react-icons/fi';
+import { FaCity, FaFile } from 'react-icons/fa'
+import { MdLocationOn } from 'react-icons/md'
 import { authAPI } from '../services/api';
 import useAuthStore from '../store/authStore';
 import Button from '../components/common/Button';
@@ -8,7 +10,7 @@ import useNotification from '../hooks/useNotification';
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login,register } = useAuthStore();
   const { success, error } = useNotification();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -19,37 +21,47 @@ const Auth = () => {
     email: '',
     password: '',
     phone: '',
+    area:'',
+    city:'',
+    aadharImage:null
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setFormData({...formData, aadharImage : e.target.files[0]})
+  }
+
+  useEffect(() => {
+  console.log("IMAGE:", formData.aadharImage);
+}, [formData.aadharImage]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    const form = new FormData();
+    for(let key in formData)
+    {
+      form.append(key,formData[key]);
+    }
     try {
       let response;
       if (isLogin) {
-        response = await authAPI.login({
-          email: formData.email,
-          password: formData.password,
-        });
-      } else {
-        response = await authAPI.register({
-          ...formData,
-          role,
-        });
-      }
-
-      const { user, token } = response.data.data;
-      login(user, token);
-      success(isLogin ? 'Login successful!' : 'Registration successful!');
-      
-      setTimeout(() => {
-        navigate(user.role === 'worker' ? '/worker-dashboard' : '/customer-dashboard');
-      }, 1000);
+        await login({
+          email:formData.email,
+          password:formData.password
+        })
+        success("Login Successful");
+        navigate('/')
+    }
+    else{
+      form.append("role",role);
+      await register(form);
+      success("Registration Successful");
+      navigate('/')
+    }
     } catch (err) {
       error(err.response?.data?.message || 'Something went wrong');
     } finally {
@@ -147,6 +159,51 @@ const Auth = () => {
               />
             </div>
           )}
+
+          {!isLogin && (
+            <div className="relative">
+              <MdLocationOn className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                name="area"
+                placeholder="Area"
+                value={formData.area}
+                onChange={handleChange}
+                required={!isLogin}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+              />
+            </div>
+          )}
+
+          {!isLogin && (
+            <div className="relative">
+              <FaCity className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                name="city"
+                placeholder="City"
+                value={formData.city}
+                onChange={handleChange}
+                required={!isLogin}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+              />
+            </div>
+          )}
+
+          {!isLogin && (
+            <div className="relative">
+              <FaFile className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="file"
+                name="aadharImage"
+                placeholder="Upload File(jpg,png,jpeg)"
+                onChange={handleFileChange}
+                required={!isLogin}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+              />
+            </div>
+          )}
+          
 
           {/* Role (signup only) */}
           {!isLogin && (
