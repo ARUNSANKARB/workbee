@@ -3,7 +3,6 @@ dotenv.config();
 
 import express from 'express';
 import connectDB from './config/database.js';
-import './config/cloudinary.js';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import skillRoutes from './routes/skills.js';
