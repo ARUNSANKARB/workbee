@@ -7,11 +7,11 @@ const BookingCard = ({ booking }) => {
     <Card className="p-4">
       <div className="flex justify-between">
         <div>
-          <div className="font-semibold">{booking.serviceDescription}</div>
-          <div className="text-sm text-gray-500">Worker: {booking.workerName || booking.worker?.userId?.name}</div>
+          <div className="font-semibold">{booking.skills}</div>
+          <div className="text-sm text-gray-500">Worker: {booking.worker?.userId?.name}</div>
         </div>
         <div className="text-right">
-          <div className="text-sm text-gray-500"><FiCalendar className="inline mr-1"/>{new Date(booking.bookingDate).toLocaleDateString()}</div>
+          <div className="text-sm text-gray-500"><FiCalendar className="inline mr-1"/>{new Date(booking.date).toLocaleDateString()}</div>
           <div className="text-sm text-gray-500"><FiClock className="inline mr-1"/>{booking.status}</div>
         </div>
       </div>

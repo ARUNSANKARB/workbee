@@ -19,8 +19,8 @@ const WorkerProfile = () => {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const res = await workerAPI.getProfile(id);
-      setProfile(res.data.data.profile || res.data.data);
+      const res = await workerAPI.getById(id);
+      setProfile(res.data);
     } catch (err) {
       console.error('Failed to load worker profile', err);
     } finally {
@@ -29,7 +29,7 @@ const WorkerProfile = () => {
   };
 
   const handleBook = () => {
-    navigate(`/booking/create?workerId=${id}`);
+    navigate(`/booking/create/${id}`);
   };
 
   if (loading || !profile) {
@@ -49,9 +49,9 @@ const WorkerProfile = () => {
         <div className="grid md:grid-cols-3 gap-8">
           <div>
             <Card>
-              <img src={profile.userId.profileImage} alt={profile.userId.name} className="w-full h-56 object-cover rounded-lg" />
-              <h2 className="text-2xl font-bold mt-4">{profile.userId.name}</h2>
-              <p className="text-gray-600">{profile.title || profile.skills?.join(', ')}</p>
+              <img src={profile.userId?.aadharImage} alt={profile.userId?.name} className="w-full h-56 object-cover rounded-lg" />
+              <h2 className="text-2xl font-bold mt-4">{profile.userId?.name}</h2>
+              <p className="text-gray-600">{profile.skills}</p>
               <div className="mt-4">
                 <Button onClick={handleBook} size="lg">Book Now</Button>
               </div>
@@ -65,9 +65,9 @@ const WorkerProfile = () => {
 
               <h4 className="font-semibold mb-2">Skills</h4>
               <div className="flex gap-2 flex-wrap mb-4">
-                {(profile.skills || []).map((s, i) => (
-                  <span key={i} className="px-3 py-1 bg-primary rounded-full text-dark font-medium">{s}</span>
-                ))}
+                {
+                  <span className="px-3 py-1 bg-primary rounded-full text-dark font-medium">{profile.skills}</span>
+                }
               </div>
 
               <h4 className="font-semibold mb-2">Reviews</h4>

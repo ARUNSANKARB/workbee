@@ -1,154 +1,52 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const bookingSchema = new mongoose.Schema(
-  {
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+const bookingSchema = mongoose.Schema({
+    customerUserId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        required : true
     },
-
-    workerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+    skilledPersonId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'skilledProfile',
+        required : true
     },
-
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'ServiceCategory',
-      default: null,
+    skills : {
+        type : String,
+        required : true
     },
-
-    workerProfileId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'WorkerProfile',
-      required: true,
+    date : {
+        type : Date,
+        required : true
     },
-
-    status: {
-      type: String,
-      enum: [
-        'pending',
-        'accepted',
-        'in_progress',
-        'completed',
-        'reviewed',
-        'rejected',
-        'cancelled',
-      ],
-      default: 'pending',
+    time : {
+        type : String,
+        required : true
     },
-
-    serviceDescription: {
-      type: String,
-      required: [true, 'Please provide service description'],
-      maxlength: [500, 'Description cannot exceed 500 characters'],
+    address : {
+        type : String,
+        required : true
     },
-
-    bookingDate: {
-      type: Date,
-      required: [true, 'Please provide booking date'],
+    area : {
+        type : String,
+        required : true
     },
-
-    estimatedCompletionDate: {
-      type: Date,
-      required: true,
+    amount : {
+        type : Number,
+        required : true
     },
-
-    actualCompletionDate: {
-      type: Date,
-      default: null,
+    status : {
+        type : String,
+        enum : ['pending','confirmed','completed','cancelled'],
+        default : 'pending'
     },
+    isPaid : {
+        type : Boolean,
+    }
+},
+{
+    timestamps : true
+})
 
-    amount: {
-      type: Number,
-      required: [true, 'Please provide amount'],
-      min: [0, 'Amount cannot be negative'],
-    },
-
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'completed', 'refunded'],
-      default: 'pending',
-    },
-
-    paymentMethod: {
-      type: String,
-      enum: ['upi', 'card', 'bank_transfer', 'cash'],
-      default: 'upi',
-    },
-
-    notes: {
-      type: String,
-      maxlength: [500, 'Notes cannot exceed 500 characters'],
-      default: '',
-    },
-
-    workerNotes: {
-      type: String,
-      maxlength: [500, 'Worker notes cannot exceed 500 characters'],
-      default: '',
-    },
-
-    images: {
-      type: [String],
-      default: [],
-    },
-
-    cancellationReason: {
-      type: String,
-      default: '',
-    },
-
-    cancelledBy: {
-      type: String,
-      enum: ['customer', 'worker', 'admin', null],
-      default: null,
-    },
-
-    cancelledAt: {
-      type: Date,
-      default: null,
-    },
-
-    acceptedAt: {
-      type: Date,
-      default: null,
-    },
-
-    rejectedAt: {
-      type: Date,
-      default: null,
-    },
-
-    location: {
-      type: {
-        type: String,
-        enum: ['Point'],
-        default: 'Point',
-      },
-      coordinates: {
-        type: [Number],
-        default: [0, 0],
-      },
-      address: {
-        type: String,
-        default: '',
-      },
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-// Indexes for faster queries
-bookingSchema.index({ customerId: 1, createdAt: -1 });
-bookingSchema.index({ workerId: 1, createdAt: -1 });
-bookingSchema.index({ status: 1 });
-bookingSchema.index({ bookingDate: 1 });
-
-const Booking = mongoose.model('Booking', bookingSchema);
-
+const Booking = mongoose.model('Booking',bookingSchema);
 export default Booking;

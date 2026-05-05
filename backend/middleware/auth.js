@@ -1,71 +1,38 @@
-import { verifyToken, extractToken } from '../utils/jwt.js';
-import { errorResponse } from '../utils/helpers.js';
-import { User } from '../models/index.js';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
-// Protect routes - verify JWT token
-export const protect = async (req, res, next) => {
-  try {
-    const token = extractToken(req.headers.authorization);
-
-    if (!token) {
-      return errorResponse(
-        res,
-        'No token provided',
-        'Authorization token required',
-        401
-      );
+const auth = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token)
+        {
+            return res.status(404).json({ message: "Token not found" })
+        }
+        const decoded = jwt.verify(token,process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+        if(!user)
+        {
+            return res.status(404).json({message:"User not found"});
+        }
+        if(user.isSuspended)
+        {
+            return res.status(403).json({message:"Account Suspended"})
+        }
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(401).json({message:"Invalid Token"})
     }
+}
 
-    const decoded = verifyToken(token);
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return errorResponse(res, 'User not found', 'Invalid token', 401);
-    }
-
-    if (user.isSuspended) {
-      return errorResponse(
-        res,
-        'Account suspended',
-        'Your account has been suspended',
-        403
-      );
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    errorResponse(res, error, 'Authentication failed', 401);
-  }
-};
-
-// Restrict to specific roles
 export const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return errorResponse(
-        res,
-        'Access denied',
-        `Only ${roles.join(', ')} can access this route`,
-        403
-      );
+    return (req,res,next) => {
+        if(!roles.includes(req.user.role))
+        {
+            return res.status(403).json({message:"Access Denied"})
+        }
+        next();
     }
-    next();
-  };
-};
+}
+export default auth;
 
-// Optional authentication - doesn't fail if no token
-export const optionalAuth = async (req, res, next) => {
-  try {
-    const token = extractToken(req.headers.authorization);
-
-    if (token) {
-      const decoded = verifyToken(token);
-      const user = await User.findById(decoded.id);
-      req.user = user;
-    }
-    next();
-  } catch (error) {
-    next();
-  }
-};

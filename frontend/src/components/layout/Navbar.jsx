@@ -6,7 +6,7 @@ import Button from '../common/Button';
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { token, user, logout , role } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -31,12 +31,16 @@ const Navbar = () => {
             <Link to="/how-it-works" className="text-dark font-medium hover:text-primary transition">How It Works</Link>
             <Link to="/contact" className="text-dark font-medium hover:text-primary transition">Contact</Link>
 
-            {isAuthenticated ? (
+            {token ? (
               <>
                 <Link to={user?.role === 'worker' ? '/worker-dashboard' : '/customer-dashboard'}
                   className="text-dark font-medium hover:text-primary transition">
                   Dashboard
                 </Link>
+                {role==="worker" && (
+                  <Button variant="outline" onClick={() => navigate('/become-worker')}>Register skills</Button>
+                )
+                }
                 {user?.role === 'admin' && (
                   <Link to="/admin-dashboard" className="text-dark font-medium hover:text-primary transition">Admin</Link>
                 )}
@@ -51,7 +55,7 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
-                <Button variant="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
+                <Button variant="primary" onClick={() => navigate('/login')}>Sign Up</Button>
               </div>
             )}
           </div>
@@ -73,7 +77,7 @@ const Navbar = () => {
             <Link to="/how-it-works" onClick={() => setMobileOpen(false)} className="block px-2 py-2 hover:bg-light rounded font-medium">How It Works</Link>
             <Link to="/contact" onClick={() => setMobileOpen(false)} className="block px-2 py-2 hover:bg-light rounded font-medium">Contact</Link>
 
-            {isAuthenticated ? (
+            {token ? (
               <>
                 <Link to={user?.role === 'worker' ? '/worker-dashboard' : '/customer-dashboard'}
                   onClick={() => setMobileOpen(false)}
@@ -91,7 +95,7 @@ const Navbar = () => {
             ) : (
               <div className="space-y-2">
                 <Button variant="outline" className="w-full" onClick={() => { navigate('/login'); setMobileOpen(false); }}>Login</Button>
-                <Button variant="primary" className="w-full" onClick={() => { navigate('/signup'); setMobileOpen(false); }}>Sign Up</Button>
+                <Button variant="primary" className="w-full" onClick={() => { navigate('/login'); setMobileOpen(false); }}>Sign Up</Button>
               </div>
             )}
           </div>
