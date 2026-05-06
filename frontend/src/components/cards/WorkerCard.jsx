@@ -10,7 +10,7 @@ const WorkerCard = ({ worker }) => {
         <div className="flex gap-4">
           {/* Image */}
           <img 
-            src={worker.userId.aadharImage} 
+            src={worker.userId?.aadharImage} 
             alt={worker.userId.name}
             className="w-16 h-16 rounded-lg object-cover"
           />
